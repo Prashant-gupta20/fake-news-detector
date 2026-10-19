@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TruthLens AI | Hybrid Fake News Detection & Explainability Platform</title>
+  <meta name="description" content="A Hybrid Machine Learning and NLP platform for detecting misinformation, analyzing sensationalism, and providing transparent fact-checking explanations.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="dark-theme">
+  <!-- Background Glow Orbs -->
+  <div class="glow-orb orb-1"></div>
+  <div class="glow-orb orb-2"></div>
+  <div class="glow-orb orb-3"></div>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="logo-title">TruthLens <span>AI</span></h1>
+          <p class="logo-subtitle">Hybrid Machine Learning & Linguistic Fact-Checker</p>
+        </div>
+      </div>
+
+      <nav class="nav-tabs" role="tablist">
+        <button class="nav-tab active" data-tab="tab-detector" role="tab" aria-selected="true" id="tab-btn-detector">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          Detector Studio
+        </button>
+        <button class="nav-tab" data-tab="tab-metrics" role="tab" aria-selected="false" id="tab-btn-metrics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          Evaluation & Viva Prep
+        </button>
+        <button class="nav-tab" data-tab="tab-architecture" role="tab" aria-selected="false" id="tab-btn-architecture">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="8" x="2" y="2" rx="2"/><rect width="8" height="8" x="14" y="2" rx="2"/><rect width="8" height="8" x="2" y="14" rx="2"/><rect width="8" height="8" x="14" y="14" rx="2"/></svg>
+          Pipeline & Deploy
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <a href="/docs" target="_blank" class="badge-btn api-link" title="Open FastAPI Interactive Swagger Documentation">
+          <span class="status-dot"></span> API Docs
+        </a>
+        <button id="theme-toggle-btn" class="icon-btn" aria-label="Toggle Theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrapper">
+    <!-- TAB 1: DETECTOR STUDIO -->
+    <section id="tab-detector" class="tab-pane active" role="tabpanel">
+      <!-- Quick Demo Samples Bar -->
+      <div class="samples-card glass-panel">
+        <div class="samples-header">
+          <span class="pulse-indicator"></span>
+          <span class="samples-title">⚡ 1-Click Test Samples (Demo Presets):</span>
+        </div>
+        <div class="samples-buttons" id="samples-container">
+          <!-- Dynamically populated or default fallback -->
+          <button class="sample-chip real-chip" data-sample-type="real-1">
+            <span class="chip-badge real">REAL</span> NASA Webb Discovery
+          </button>
+          <button class="sample-chip real-chip" data-sample-type="real-2">
+            <span class="chip-badge real">REAL</span> WHO Flu Guidelines
+          </button>
+          <button class="sample-chip fake-chip" data-sample-type="fake-1">
+            <span class="chip-badge fake">FAKE</span> Miracle Himalayan Cure
+          </button>
+          <button class="sample-chip fake-chip" data-sample-type="fake-2">
+            <span class="chip-badge fake">FAKE</span> 5G Mind Frequencies
+          </button>
+        </div>
+      </div>
+
+      <!-- Analysis Studio Grid -->
+      <div class="detector-grid">
+        <!-- Input Column -->
+        <div class="input-card glass-panel">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Article Input</h2>
+              <p class="card-subtitle">Paste an article headline and text to analyze credibility</p>
+            </div>
+            <button id="clear-btn" class="btn-ghost" title="Clear all text">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Clear
+            </button>
+          </div>
+
+          <form id="news-form" class="analysis-form">
+            <div class="form-group">
+              <label for="headline-input" class="form-label">
+                Headline / Title <span class="optional-tag">(Optional)</span>
+              </label>
+              <input 
+                type="text" 
+                id="headline-input" 
+                class="form-control" 
+                placeholder="e.g., NASA Announces New Spectroscopic Findings..."
+                autocomplete="off"
+              >
+            </div>
+
+            <div class="form-group">
+              <div class="label-with-counter">
+                <label for="article-input" class="form-label">
+                  Article Body / Claim Text <span class="required-tag">*</span>
+                </label>
+                <span id="char-counter" class="char-counter">0 words | 0 chars</span>
+              </div>
+              <textarea 
+                id="article-input" 
+                class="form-control text-area" 
+                rows="8" 
+                placeholder="Paste the news story, paragraph, social media post, or claim here..."
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" id="submit-btn" class="btn-primary">
+                <span class="btn-content">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                  Analyze Authenticity
+                </span>
+                <span class="btn-spinner hidden"></span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Results Column -->
+        <div class="results-card glass-panel" id="results-panel">
+          <!-- Default Empty State -->
+          <div id="results-placeholder" class="empty-state">
+            <div class="empty-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10 9 9 9 8 9"/>
+              </svg>
+            </div>
+            <h3>Ready for Verification</h3>
+            <p>Paste an article on the left or select a sample preset above to see instant ML confidence, linguistic breakdown, and explainability reasoning.</p>
+          </div>
+
+          <!-- Active Results Container -->
+          <div id="results-content" class="results-container hidden">
+            <!-- Top Verdict Banner -->
+            <div id="verdict-banner" class="verdict-banner">
+              <div class="verdict-info">
+                <span id="verdict-badge" class="verdict-badge">AUTHENTIC</span>
+                <h3 id="verdict-title" class="verdict-title">Likely Authentic News</h3>
+                <p id="verdict-desc" class="verdict-desc">High credibility indicators and low sensationalism detected.</p>
+              </div>
+
+              <!-- Radial Gauge -->
+              <div class="gauge-container">
+                <svg class="radial-gauge" viewBox="0 0 100 100">
+                  <circle class="gauge-bg" cx="50" cy="50" r="42"/>
+                  <circle class="gauge-fill" id="gauge-fill" cx="50" cy="50" r="42"/>
+                </svg>
+                <div class="gauge-label">
+                  <span id="gauge-percent" class="gauge-number">94%</span>
+                  <span class="gauge-text" id="gauge-caption">Credibility</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Probability Split Bar -->
+            <div class="prob-section">
+              <div class="prob-labels">
+                <span class="prob-tag real-tag">Real News: <strong id="real-prob-text">94.2%</strong></span>
+                <span class="prob-tag fake-tag">Fake News: <strong id="fake-prob-text">5.8%</strong></span>
+              </div>
+              <div class="prob-track">
+                <div class="prob-fill real-fill" id="prob-bar-real" style="width: 94.2%;"></div>
+                <div class="prob-fill fake-fill" id="prob-bar-fake" style="width: 5.8%;"></div>
+              </div>
+            </div>
+
+            <!-- 4-Linguistic Stat Cards -->
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <span class="metric-icon">🔥</span>
+                <div class="metric-data">
+                  <span class="metric-value" id="sensationalism-val">12/100</span>
+                  <span class="metric-name">Sensationalism Index</span>
+                </div>
+              </div>
+
+              <div class="metric-card">
+                <span class="metric-icon">🏛️</span>
+                <div class="metric-data">
+                  <span class="metric-value" id="attribution-val">85/100</span>
+                  <span class="metric-name">Source Attribution</span>
+                </div>
+              </div>
+
+              <div class="metric-card">
+                <span class="metric-icon">📢</span>
+                <div class="metric-data">
+                  <span class="metric-value" id="shouting-val">0%</span>
+                  <span class="metric-name">Capitalized Urgency</span>
+                </div>
+              </div>
+
+              <div class="metric-card">
+                <span class="metric-icon">❗</span>
+                <div class="metric-data">
+                  <span class="metric-value" id="exclamation-val">0</span>
+                  <span class="metric-name">Exclamation Marks</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Linguistic Highlights & Keyword Signals -->
+            <div class="signals-section">
+              <h4 class="section-title">🔍 Detected Signal Markers</h4>
+              <div id="signals-chips" class="chips-wrap">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- Hybrid AI & Heuristic Explanation -->
+            <div class="explanation-box">
+              <div class="explanation-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10H12V2z"/><path d="M12 12 2.1 7.1"/><path d="M12 12v10"/></svg>
+                <h4 id="explanation-title">Hybrid Analysis Rationale</h4>
+                <span class="provider-tag" id="explanation-provider">Rule + ML Engine</span>
+              </div>
+              <ul id="rationale-list" class="rationale-list">
+                <!-- Injected via JS -->
+              </ul>
+            </div>
+
+            <!-- Actionable Reader Checklist -->
+            <div class="checklist-box">
+              <h4 class="checklist-title">📋 Verification Action Checklist for Readers</h4>
+              <ul id="checklist-items" class="checklist-items">
+                <!-- Injected via JS -->
+              </ul>
+            </div>
+
+            <!-- Feedback & Actions -->
+            <div class="result-actions">
+              <button id="copy-report-btn" class="btn-secondary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                Copy Full Report
+              </button>
+              <div class="feedback-group">
+                <span class="feedback-label">Accuracy Feedback:</span>
+                <button class="feedback-btn" data-vote="accurate" title="Accurate verdict">👍 Agree</button>
+                <button class="feedback-btn" data-vote="inaccurate" title="Incorrect verdict">👎 Disagree</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: MODEL EVALUATION & VIVA CHEATSHEET -->
+    <section id="tab-metrics" class="tab-pane hidden" role="tabpanel">
+      <div class="viva-header-card glass-panel">
+        <div>
+          <h2>Model Evaluation & College Viva Preparation</h2>
+          <p>Comprehensive statistical evaluation, confusion matrix breakdown, and examiner questions with model answers.</p>
+        </div>
+        <button id="refresh-metrics-btn" class="btn-secondary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+          Reload Live Metrics
+        </button>
+      </div>
+
+      <!-- KPI Scorecards -->
+      <div class="kpi-grid">
+        <div class="kpi-card glass-panel">
+          <span class="kpi-label">Test Accuracy</span>
+          <span class="kpi-value" id="kpi-accuracy">94.1%</span>
+          <span class="kpi-sub">Overall correct classifications</span>
+        </div>
+        <div class="kpi-card glass-panel">
+          <span class="kpi-label">Precision (Fake Class)</span>
+          <span class="kpi-value" id="kpi-precision">93.8%</span>
+          <span class="kpi-sub">Minimizes false alarms</span>
+        </div>
+        <div class="kpi-card glass-panel">
+          <span class="kpi-label">Recall (Sensitivity)</span>
+          <span class="kpi-value" id="kpi-recall">94.7%</span>
+          <span class="kpi-sub">Catches deceptive articles</span>
+        </div>
+        <div class="kpi-card glass-panel">
+          <span class="kpi-label">F1-Score (Harmonic Mean)</span>
+          <span class="kpi-value" id="kpi-f1">94.2%</span>
+          <span class="kpi-sub">Balanced precision & recall</span>
+        </div>
+      </div>
+
+      <!-- Confusion Matrix & Top Features Grid -->
+      <div class="eval-two-col">
+        <!-- Confusion Matrix Card -->
+        <div class="cm-card glass-panel">
+          <div class="card-header">
+            <h3>Confusion Matrix Breakdown</h3>
+            <span class="badge-tag">Test Partition (20%)</span>
+          </div>
+          <p class="section-desc">Measures ground truth vs predicted classes. Helps demonstrate error rates to project evaluators.</p>
+          
+          <div class="cm-table-wrap">
+            <table class="cm-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Predicted REAL</th>
+                  <th>Predicted FAKE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Actual REAL</th>
+                  <td class="cm-cell cm-tn" id="cm-tn">
+                    <span class="cm-num">17</span>
+                    <span class="cm-name">True Negative (Correct Real)</span>
+                  </td>
+                  <td class="cm-cell cm-fp" id="cm-fp">
+                    <span class="cm-num">1</span>
+                    <span class="cm-name">False Positive (Type I Error)</span>
+                  </td>
+                </tr>
+                <tr>
+                  <th>Actual FAKE</th>
+                  <td class="cm-cell cm-fn" id="cm-fn">
+                    <span class="cm-num">1</span>
+                    <span class="cm-name">False Negative (Type II Error)</span>
+                  </td>
+                  <td class="cm-cell cm-tp" id="cm-tp">
+                    <span class="cm-num">17</span>
+                    <span class="cm-name">True Positive (Correct Fake)</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Top Feature Weights Card -->
+        <div class="features-card glass-panel">
+          <div class="card-header">
+            <h3>Top Indicative Feature Weights</h3>
+            <span class="badge-tag">TF-IDF Importance</span>
+          </div>
+          <p class="section-desc">Tokens with the strongest linear coefficients in distinguishing authenticity.</p>
+          
+          <div class="features-split">
+            <div class="features-col">
+              <h4 class="col-title fake-title">⚠️ Top Misinformation Signals</h4>
+              <ul class="feature-pills" id="fake-features-list">
+                <!-- Injected via JS -->
+              </ul>
+            </div>
+            <div class="features-col">
+              <h4 class="col-title real-title">✅ Top Authentic Signals</h4>
+              <ul class="feature-pills" id="real-features-list">
+                <!-- Injected via JS -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- College Project Viva Questions & Answers -->
+      <div class="viva-faq-card glass-panel">
+        <div class="card-header">
+          <div class="viva-badge">🎓 College Project Viva Guide</div>
+          <h3>Frequently Asked Viva Questions & Answers</h3>
+        </div>
+        <p class="section-desc">Prepare for professor and external examiner questions with these technical talking points.</p>
+
+        <div class="accordion" id="viva-accordion">
+          <!-- Item 1 -->
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>1. Why did you choose Passive-Aggressive Classifier over Naive Bayes or SVM?</span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion-content">
+              <p>Passive-Aggressive algorithms are online margin-based learning algorithms tailored for high-dimensional, sparse text data. When a sample is classified correctly, the model remains <em>passive</em> (parameters unchanged). When an error occurs, it makes an <em>aggressive</em> step update to satisfy the margin constraint with minimal perturbation. It offers faster convergence and handles streaming news updates better than batch algorithms like SVM.</p>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>2. How does TF-IDF feature extraction work and why use Sublinear TF?</span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion-content">
+              <p><strong>TF-IDF</strong> (Term Frequency - Inverse Document Frequency) balances how frequently a term appears in a document against how common it is across the entire corpus. We enabled <code>sublinear_tf=True</code> which replaces raw frequency <em>tf</em> with <code>1 + log(tf)</code>. This reflects diminishing returns: twenty occurrences of the word "shocking" in one sensational article should not have 20x the weight of a single occurrence.</p>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>3. How do you calculate confidence probabilities from a linear classifier?</span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion-content">
+              <p>Standard Passive-Aggressive classifiers only output raw margin distances rather than probabilities. To convert decision distances into well-calibrated posterior probabilities, we wrapped the classifier in Scikit-Learn's <code>CalibratedClassifierCV</code> using sigmoid calibration (Platt scaling) with 3-fold cross validation. This guarantees calibrated probabilities between 0% and 100%.</p>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>4. What makes this a "Hybrid" model rather than pure ML?</span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion-content">
+              <p>Pure ML models are black boxes that output a single probability without explaining <em>why</em>. Our system couples the statistical TF-IDF classifier with an interpretable linguistic inspection pipeline (sensationalism scoring, shouting word ratios, citation attribution) and semantic synthesis. This provides both instant classification and actionable transparent explanations.</p>
+            </div>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="accordion-item">
+            <button class="accordion-trigger">
+              <span>5. How does the model mitigate overfitting?</span>
+              <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="accordion-content">
+              <p>Overfitting is controlled via 3 mechanisms: 1) Limiting vocabulary to top 5,000 informative n-grams; 2) Regularization parameter <code>C=0.5</code> in the Passive-Aggressive loss function to penalize aggressive weights; and 3) Stratified train-test splits ensuring balanced class representation across iterations.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: SYSTEM ARCHITECTURE & DEPLOYMENT -->
+    <section id="tab-architecture" class="tab-pane hidden" role="tabpanel">
+      <!-- Architecture Overview -->
+      <div class="arch-card glass-panel">
+        <div class="card-header">
+          <div>
+            <h2>System Pipeline Architecture</h2>
+            <p>End-to-end data flow from raw headline input to hybrid credibility verdict.</p>
+          </div>
+          <span class="badge-tag">FastAPI + Scikit-Learn</span>
+        </div>
+
+        <div class="pipeline-diagram">
+          <div class="pipe-node">
+            <div class="node-icon">📝</div>
+            <div class="node-title">Raw Input</div>
+            <div class="node-desc">Title + Article body text</div>
+          </div>
+          <div class="pipe-arrow">➜</div>
+          <div class="pipe-node">
+            <div class="node-icon">🧹</div>
+            <div class="node-title">Preprocessing</div>
+            <div class="node-desc">Regex cleaning, lowercasing, stop-words</div>
+          </div>
+          <div class="pipe-arrow">➜</div>
+          <div class="pipe-node">
+            <div class="node-icon">📊</div>
+            <div class="node-title">TF-IDF Vectorizer</div>
+            <div class="node-desc">Unigram & Bigram matrix (5,000 max features)</div>
+          </div>
+          <div class="pipe-arrow">➜</div>
+          <div class="pipe-node">
+            <div class="node-icon">⚖️</div>
+            <div class="node-title">Calibrated PAC Model</div>
+            <div class="node-desc">Platt-scaled decision boundary confidence</div>
+          </div>
+          <div class="pipe-arrow">➜</div>
+          <div class="pipe-node">
+            <div class="node-icon">🧠</div>
+            <div class="node-title">Hybrid Synthesis</div>
+            <div class="node-desc">Linguistic rules + AI explanation</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deployment Guide Section -->
+      <div class="deploy-card glass-panel">
+        <div class="card-header">
+          <div>
+            <h2>1-Click Free Deployment Guide (Render / Railway / Vercel)</h2>
+            <p>Step-by-step instructions to take this application live on the web for free.</p>
+          </div>
+          <span class="status-live">🚀 Production Ready</span>
+        </div>
+
+        <div class="deploy-steps">
+          <div class="step-card">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Push Code to GitHub</h4>
+              <p>Initialize a git repository in your project directory and push to your GitHub account:</p>
+              <pre class="code-block"><code>git init
+git add .
+git commit -m "TruthLens Fake News Detector Initial Commit"
+git branch -M main
+git remote add origin https://github.com/&lt;your-username&gt;/fake-news-detector.git
+git push -u origin main</code></pre>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Deploy for Free on Render.com (Recommended)</h4>
+              <p>Render provides 100% free hosting for Python FastAPI web services:</p>
+              <ol class="step-list">
+                <li>Create a free account on <a href="https://render.com" target="_blank" class="text-link">render.com</a>.</li>
+                <li>Click <strong>New +</strong> ➜ <strong>Web Service</strong>.</li>
+                <li>Select your GitHub repository <code>fake-news-detector</code>.</li>
+                <li>Set the following parameters:
+                  <ul>
+                    <li><strong>Runtime:</strong> <code>Python 3</code></li>
+                    <li><strong>Build Command:</strong> <code>pip install -r requirements.txt</code></li>
+                    <li><strong>Start Command:</strong> <code>uvicorn backend.main:app --host 0.0.0.0 --port $PORT</code></li>
+                  </ul>
+                </li>
+                <li>Click <strong>Deploy Web Service</strong>. Within 2 minutes, your live HTTPS URL will be active!</li>
+              </ol>
+            </div>
+          </div>
+
+          <div class="step-card">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Optional: Configure Gemini AI Key for Real-time LLM Explanations</h4>
+              <p>The system runs 100% offline out-of-the-box. If you want live LLM reasoning, simply add an environment variable in Render:</p>
+              <pre class="code-block"><code>Key: GEMINI_API_KEY
+Value: &lt;your_gemini_api_key&gt;</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>TruthLens AI &copy; 2026 &bull; Developed for College Project &bull; Built with FastAPI, Scikit-Learn & Modern CSS</p>
+      <div class="footer-links">
+        <a href="/docs" target="_blank">Swagger OpenAPI</a>
+        <span>&bull;</span>
+        <a href="#tab-metrics" id="footer-viva-link">Viva Prep</a>
+        <span>&bull;</span>
+        <a href="#tab-architecture" id="footer-deploy-link">Deployment Steps</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
