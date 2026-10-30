@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TruthLens &mdash; Detect Fake News with AI</title>
+  <meta name="description" content="Next-gen AI news verification platform combining calibrated machine learning with linguistic heuristic analysis for instant misinformation detection.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css?v=11">
+</head>
+<body class="dark-theme">
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <div class="app-layout">
+    <!-- Left Sidebar Navigation (Option 5 Mockup Layout) -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="sidebar-brand-text">
+          <span class="brand-title">TruthLens</span>
+          <span class="brand-tag">AI</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav" role="tablist">
+        <button type="button" class="sidebar-nav-item active" data-nav="home" id="nav-home">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">Home</span>
+        </button>
+        <button type="button" class="sidebar-nav-item" data-nav="check" id="nav-check">
+          <span class="nav-icon">🛡️</span>
+          <span class="nav-label">Check News</span>
+        </button>
+        <button type="button" class="sidebar-nav-item" data-nav="history" id="nav-history">
+          <span class="nav-icon">🕒</span>
+          <span class="nav-label">History</span>
+          <span class="sidebar-history-badge" id="sidebar-history-count">0</span>
+        </button>
+        <button type="button" class="sidebar-nav-item" data-nav="insights" id="nav-insights">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Insights</span>
+        </button>
+        <button type="button" class="sidebar-nav-item" data-nav="about" id="nav-about">
+          <span class="nav-icon">ℹ️</span>
+          <span class="nav-label">About</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div id="sidebar-auth-section" class="sidebar-auth-section">
+          <button type="button" id="sidebar-logout-btn" class="sidebar-logout-btn" title="Log out or sign in">
+            <span class="nav-icon">👤</span>
+            <span class="nav-label" id="sidebar-user-label">Log out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Application Area -->
+    <div class="app-main-area">
+      <!-- Top Bar -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button type="button" id="mobile-sidebar-toggle" class="mobile-toggle" aria-label="Toggle navigation menu">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <div class="topbar-brand-mobile">
+            <div class="brand-symbol-small">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+            <span class="brand-title">TruthLens</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Theme Mode Pill (matches mockup "Dark Mode" / "Light Mode") -->
+          <div class="theme-mode-pill" id="theme-mode-pill">
+            <span class="theme-mode-text" id="theme-mode-text">Dark Mode</span>
+            <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle visual theme" title="Toggle Light / Dark mode">
+              <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"/>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+              </svg>
+              <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="system-status-indicator" title="AI Model is active and ready">
+            <span class="status-pulse"></span>
+            <span class="status-text">AI Ready</span>
+          </div>
+
+          <!-- User Authentication Header Badge / Buttons -->
+          <div id="auth-header-section" class="auth-header-section">
+            <button type="button" id="open-auth-modal-btn" class="auth-header-btn">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span>Sign In</span>
+            </button>
+            <div id="user-profile-badge" class="user-profile-badge hidden">
+              <span class="user-avatar" id="user-avatar-initial">P</span>
+              <span class="user-display-name" id="user-display-name">Prashant</span>
+              <button type="button" id="logout-btn" class="logout-link" title="Sign out of account">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Scrollable Content Area -->
+      <main class="page-container">
+        <!-- VIEW 1: HOME WORKBENCH (Matches user mockup) -->
+        <div id="view-home" class="app-view active">
+          <div class="workbench-center">
+            
+            <!-- Hero Title & Subtitle from Mockup -->
+            <div class="hero-section">
+              <h1 class="hero-title">Detect Fake News with AI</h1>
+              <p class="hero-subtitle">Paste a news headline or article and get an instant analysis.</p>
+            </div>
+
+            <!-- Quick Curated Sample Benchmarks -->
+            <div class="quick-samples-bar">
+              <div class="samples-scroll" id="samples-container">
+                <button type="button" class="sample-chip" data-sample-type="real-1" data-category="REAL" title="Real science discovery by NASA">
+                  <span class="chip-status credible">REAL</span>
+                  <span class="chip-title">NASA Webb Telescope</span>
+                </button>
+                <button type="button" class="sample-chip" data-sample-type="real-2" data-category="REAL" title="Official health guidance from WHO">
+                  <span class="chip-status credible">REAL</span>
+                  <span class="chip-title">WHO Flu Guidelines</span>
+                </button>
+                <button type="button" class="sample-chip" data-sample-type="real-3" data-category="REAL" title="EU Clean Energy Accord">
+                  <span class="chip-status credible">REAL</span>
+                  <span class="chip-title">EU Energy Accord</span>
+                </button>
+                <button type="button" class="sample-chip" data-sample-type="fake-1" data-category="FAKE" title="Cancer Root Miracle Hoax">
+                  <span class="chip-status deceptive">FAKE</span>
+                  <span class="chip-title">Himalayan Cancer Cure</span>
+                </button>
+                <button type="button" class="sample-chip" data-sample-type="fake-2" data-category="FAKE" title="5G Mind Control Conspiracy">
+                  <span class="chip-status deceptive">FAKE</span>
+                  <span class="chip-title">5G Mind Control</span>
+                </button>
+                <button type="button" class="sample-chip" data-sample-type="fake-3" data-category="FAKE" title="Lemon Sock Medical Hoax">
+                  <span class="chip-status deceptive">FAKE</span>
+                  <span class="chip-title">Lemon Sock Toxins</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- News Input Card (Mockup Card Style) -->
+            <div class="input-card">
+              <form id="news-form" class="editor-form">
+                <!-- Headline Row (Optional) -->
+                <div class="input-headline-row">
+                  <input
+                    type="text"
+                    id="headline-input"
+                    class="field-input headline-input"
+                    placeholder="News Headline (Optional)..."
+                    autocomplete="off"
+                  >
+                  <div class="input-quick-actions">
+                    <button type="button" id="paste-btn" class="subtle-btn" title="Paste text from clipboard">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                      </svg>
+                      <span>Paste</span>
+                    </button>
+                    <button type="button" id="clear-btn" class="subtle-btn" title="Clear all text fields">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                      </svg>
+                      <span>Clear</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Main Textarea with Document Icon (Matches mockup: 📄 Paste news headline or article here...) -->
+                <div class="textarea-container">
+                  <div class="textarea-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                      <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                  </div>
+                  <textarea
+                    id="article-input"
+                    class="field-input article-textarea"
+                    rows="5"
+                    placeholder="Paste news headline or article here..."
+                    required
+                  ></textarea>
+                </div>
+
+                <!-- Live Metrics Strip -->
+                <div class="input-meta-bar">
+                  <div class="field-metrics">
+                    <span id="char-counter" class="mono-badge">0 words • 0 chars</span>
+                  </div>
+                  <!-- Real-time Live Signal Pre-check -->
+                  <div id="live-text-insights" class="live-insights-strip">
+                    <div class="insight-pill info" id="live-insight-reading">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <span id="live-reading-text">Ready for text input</span>
+                    </div>
+                    <div class="insight-pill warning hidden" id="live-insight-warning">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      <span id="live-warning-text">Clickbait or shouting words detected</span>
+                    </div>
+                    <div class="insight-pill source hidden" id="live-insight-source">
+                      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span id="live-source-text">Credible sources found</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Hero Action Button: "Analyze News →" with Royal Violet to Neon Magenta Gradient -->
+                <button type="submit" id="submit-btn" class="mockup-analyze-btn">
+                  <span class="btn-content">
+                    <span>Analyze News &rarr;</span>
+                  </span>
+                  <span class="btn-spinner hidden" aria-hidden="true"></span>
+                </button>
+              </form>
+            </div>
+
+            <!-- Empty / Ready State -->
+            <div id="results-placeholder" class="mockup-ready-card">
+              <div class="ready-badge-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  <path d="M12 8v4"/><path d="M12 16h.01"/>
+                </svg>
+              </div>
+              <p>Ready to verify. Paste an article above or pick one of the sample benchmarks.</p>
+            </div>
+
+            <!-- Active Results Container (Exact Mockup Design) -->
+            <div id="results-content" class="active-dossier hidden">
+              
+              <!-- Result Card (Green Check Circle + Bold Title + Description + 87% Confidence) -->
+              <div id="verdict-banner" class="mockup-verdict-card real">
+                <div class="verdict-card-left">
+                  <div class="verdict-icon-circle" id="verdict-icon-circle">
+                    <!-- Dynamic Checkmark or Cross Icon -->
+                    <svg id="verdict-svg-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
+                  <div class="verdict-text-block">
+                    <div class="verdict-title-row">
+                      <h3 id="verdict-title" class="verdict-title">Real News</h3>
+                      <span id="verdict-badge" class="verdict-status-pill hidden">REAL NEWS</span>
+                    </div>
+                    <p id="verdict-desc" class="verdict-desc">This news source is likely genuine based on our AI analysis.</p>
+                  </div>
+                </div>
+
+                <div class="verdict-card-right">
+                  <div class="verdict-percent-val" id="gauge-percent">87%</div>
+                  <div class="verdict-percent-sub" id="verdict-confidence-badge">Confidence</div>
+                  <!-- Hidden elements preserved for JS compatibility -->
+                  <span id="gauge-caption" class="hidden">Trust Score</span>
+                  <svg class="hidden" viewBox="0 0 100 100"><circle id="gauge-fill" cx="50" cy="50" r="42"/></svg>
+                  <span id="dossier-id" class="hidden">TL-9482</span>
+                </div>
+              </div>
+
+              <!-- Key Analysis Section (Mockup Component with 3 Pills) -->
+              <div class="key-analysis-section">
+                <h4 class="key-analysis-title">Key Analysis</h4>
+                <div class="key-analysis-pills" role="tablist">
+                  <button type="button" class="key-pill-btn active" data-pill="sources" id="pill-btn-sources">
+                    <span>Source Check</span>
+                  </button>
+                  <button type="button" class="key-pill-btn" data-pill="language" id="pill-btn-language">
+                    <span>Language Analysis</span>
+                  </button>
+                  <button type="button" class="key-pill-btn" data-pill="facts" id="pill-btn-facts">
+                    <span>Fact Verification</span>
+                  </button>
+                </div>
+
+                <!-- Pane 1: Source Check -->
+                <div id="pill-pane-sources" class="key-pane active">
+                  <div class="probability-breakdown">
+                    <div class="prob-header">
+                      <div class="prob-stat">
+                        <span class="prob-dot dot-real"></span>
+                        <span class="prob-name">Chance of Being Real:</span>
+                        <strong id="real-prob-text" class="mono">94.2%</strong>
+                      </div>
+                      <div class="prob-stat">
+                        <span class="prob-dot dot-fake"></span>
+                        <span class="prob-name">Chance of Being Fake:</span>
+                        <strong id="fake-prob-text" class="mono">5.8%</strong>
+                      </div>
+                    </div>
+                    <div class="prob-bar-container">
+                      <div class="prob-segment real-segment" id="prob-bar-real" style="width: 94.2%;"></div>
+                      <div class="prob-segment fake-segment" id="prob-bar-fake" style="width: 5.8%;"></div>
+                    </div>
+                  </div>
+
+                  <div class="diagnostics-grid">
+                    <div class="diagnostic-card">
+                      <div class="diag-header">
+                        <span class="diag-title">Sources & Proof</span>
+                        <span class="diag-tag" id="attribution-tag">Verified</span>
+                      </div>
+                      <div class="diag-value" id="attribution-val">85/100</div>
+                      <div class="diag-desc">Checks if real universities, scientists, or agencies are named</div>
+                    </div>
+                    <div class="diagnostic-card">
+                      <div class="diag-header">
+                        <span class="diag-title">Checked By</span>
+                        <span class="diag-tag">Engine</span>
+                      </div>
+                      <div class="diag-value text-small" id="explanation-provider">AI + Language Rules</div>
+                      <div class="diag-desc">Calibrated TF-IDF + Heuristics verification model</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pane 2: Language Analysis -->
+                <div id="pill-pane-language" class="key-pane hidden">
+                  <div class="diagnostics-grid">
+                    <div class="diagnostic-card">
+                      <div class="diag-header">
+                        <span class="diag-title">Clickbait & Drama</span>
+                        <span class="diag-tag" id="sensationalism-tag">Low</span>
+                      </div>
+                      <div class="diag-value" id="sensationalism-val">12/100</div>
+                      <div class="diag-desc">Exaggerated words and clickbait phrases</div>
+                    </div>
+                    <div class="diagnostic-card">
+                      <div class="diag-header">
+                        <span class="diag-title">ALL-CAPS Shouting</span>
+                        <span class="diag-tag">Word Ratio</span>
+                      </div>
+                      <div class="diag-value" id="shouting-val">0%</div>
+                      <div class="diag-desc">Words in capital letters used to create panic</div>
+                    </div>
+                    <div class="diagnostic-card">
+                      <div class="diag-header">
+                        <span class="diag-title">Extra Exclamations (!)</span>
+                        <span class="diag-tag">Count</span>
+                      </div>
+                      <div class="diag-value" id="exclamation-val">0</div>
+                      <div class="diag-desc">Multiple exclamation marks used to create urgency</div>
+                    </div>
+                  </div>
+
+                  <!-- Word-by-Word Analysis Inspector -->
+                  <div class="dossier-sub-nav" role="tablist">
+                    <button type="button" class="subview-btn active" data-subview="summary" id="tab-subview-summary" role="tab" aria-selected="true">
+                      <span>Summary Overview</span>
+                    </button>
+                    <button type="button" class="subview-btn" data-subview="annotated" id="tab-subview-annotated" role="tab" aria-selected="false">
+                      <span>Word-by-Word Analysis</span>
+                    </button>
+                  </div>
+                  <div id="subview-summary-container" class="subview-pane active">
+                    <div class="signals-collection" id="signals-chips"></div>
+                  </div>
+                  <div id="subview-annotated-container" class="subview-pane hidden">
+                    <div class="annotated-card">
+                      <div class="annotated-content-area">
+                        <div class="annotated-headline-label">News Headline:</div>
+                        <div class="annotated-headline-display" id="annotated-headline-display">&mdash;</div>
+                        <div class="annotated-body-label">Highlighted Article Text:</div>
+                        <div class="annotated-body-display" id="annotated-body-display">&mdash;</div>
+                      </div>
+                      <div class="annotated-stats-bar" id="annotated-stats-bar"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pane 3: Fact Verification -->
+                <div id="pill-pane-facts" class="key-pane hidden">
+                  <div class="dossier-section">
+                    <div class="section-heading">
+                      <h4 id="explanation-title">Why We Made This Decision</h4>
+                    </div>
+                    <ul id="rationale-list" class="findings-list"></ul>
+                  </div>
+
+                  <div class="dossier-section checklist-section">
+                    <div class="section-heading">
+                      <h4>What You Should Do Next</h4>
+                    </div>
+                    <ul id="checklist-items" class="protocol-checklist"></ul>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Export & Feedback Actions Bar -->
+              <div class="dossier-actions-bar">
+                <div class="action-buttons-group">
+                  <button type="button" id="copy-report-btn" class="action-btn secondary">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                    </svg>
+                    <span>Copy Summary</span>
+                  </button>
+                  <button type="button" id="export-json-btn" class="action-btn secondary">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                      <polyline points="7 10 12 15 17 10"/>
+                      <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    <span>Save JSON</span>
+                  </button>
+                  <button type="button" id="print-dossier-btn" class="action-btn secondary">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 6 2 18 2 18 9"/>
+                      <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                      <rect width="12" height="8" x="6" y="14"/>
+                    </svg>
+                    <span>Print PDF</span>
+                  </button>
+                </div>
+
+                <div class="feedback-unit">
+                  <span class="feedback-query">Agree with check?</span>
+                  <button type="button" class="feedback-btn" data-vote="accurate"><span>👍 Agree</span></button>
+                  <button type="button" class="feedback-btn" data-vote="inaccurate"><span>👎 Disagree</span></button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- VIEW 2: HISTORY VIEW (Dedicated tab accessed from sidebar) -->
+        <div id="view-history" class="app-view hidden">
+          <div class="workbench-center">
+            <div class="hero-section">
+              <h1 class="hero-title">Your Verification History</h1>
+              <p class="hero-subtitle">Past news articles and claims verified during your sessions.</p>
+            </div>
+            <div class="history-view-card">
+              <div class="history-header">
+                <div class="history-title-wrap">
+                  <h3>Saved Reports</h3>
+                  <span class="history-count-badge" id="history-count">0</span>
+                </div>
+                <button type="button" id="clear-history-btn" class="subtle-btn clear-history-btn">Clear All</button>
+              </div>
+              <div class="history-list" id="history-items-container">
+                <div class="history-empty" id="history-empty-state">
+                  <p>No search history yet. News you check will appear here.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 3: INSIGHTS VIEW (Dedicated tab accessed from sidebar) -->
+        <div id="view-insights" class="app-view hidden">
+          <div class="workbench-center">
+            <div class="hero-section">
+              <h1 class="hero-title">AI & Misinformation Insights</h1>
+              <p class="hero-subtitle">How TruthLens identifies deceptive language and synthetic claims.</p>
+            </div>
+            <div class="insights-grid">
+              <div class="insight-stat-card">
+                <span class="stat-num">44,898</span>
+                <span class="stat-name">Trained Articles</span>
+                <span class="stat-desc">ISOT dataset benchmark with balanced 50/50 real vs fake distribution.</span>
+              </div>
+              <div class="insight-stat-card">
+                <span class="stat-num">94.3%</span>
+                <span class="stat-name">Model Accuracy</span>
+                <span class="stat-desc">Passive-Aggressive linear classifier with TF-IDF n-grams (1-2).</span>
+              </div>
+              <div class="insight-stat-card">
+                <span class="stat-num">4-Layer</span>
+                <span class="stat-name">Heuristic Engine</span>
+                <span class="stat-desc">Clickbait drama, institutional attribution, shouting words, and punctuation.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIEW 4: ABOUT VIEW (Dedicated tab accessed from sidebar) -->
+        <div id="view-about" class="app-view hidden">
+          <div class="workbench-center">
+            <div class="hero-section">
+              <h1 class="hero-title">About TruthLens AI</h1>
+              <p class="hero-subtitle">Empowering digital citizens with instant claim verification.</p>
+            </div>
+            <div class="about-card">
+              <h3>Editorial Mission</h3>
+              <p>TruthLens is engineered to combat viral hoaxes, synthetic disinformation, and sensationalized clickbait without compromising user privacy. All checks run with local heuristics and high-throughput machine learning.</p>
+              <div class="about-tech-stack">
+                <span class="tech-badge">Python FastAPI</span>
+                <span class="tech-badge">Scikit-Learn</span>
+                <span class="tech-badge">TF-IDF Vectorizer</span>
+                <span class="tech-badge">Passive-Aggressive Classifier</span>
+                <span class="tech-badge">PBKDF2 Password Hashing</span>
+                <span class="tech-badge">SQLite Users DB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Authentication Modal (Sign In / Sign Up) -->
+  <div id="auth-modal" class="auth-modal-backdrop hidden" aria-hidden="true" role="dialog" aria-labelledby="auth-modal-title">
+    <div class="auth-modal-card">
+      <button type="button" id="close-auth-modal-btn" class="modal-close-btn" aria-label="Close modal">&times;</button>
+      
+      <div class="auth-modal-header">
+        <div class="auth-brand-badge">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <h3 id="auth-modal-title">Welcome to TruthLens</h3>
+        <p id="auth-modal-subtitle">Sign in to save your personal verification history</p>
+      </div>
+
+      <!-- Auth Tabs: Sign In / Create Account -->
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab active" id="tab-btn-login" role="tab" aria-selected="true">Sign In</button>
+        <button type="button" class="auth-tab" id="tab-btn-register" role="tab" aria-selected="false">Create Account</button>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="login-form" class="auth-form">
+        <div class="auth-input-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" placeholder="e.g. prashant@truthlens.ai" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <label for="login-password">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div id="login-error" class="auth-error-msg hidden"></div>
+        <button type="submit" id="login-submit-btn" class="auth-submit-btn">
+          <span>Sign In</span>
+        </button>
+        
+        <!-- Quick 1-Click Demo Login for Viva / Presentations -->
+        <div class="auth-demo-divider">
+          <span>or test with 1-click</span>
+        </div>
+        <button type="button" id="demo-login-btn" class="auth-demo-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+          <span>Demo Account (Prashant Gupta)</span>
+        </button>
+      </form>
+
+      <!-- Register / Create Account Form -->
+      <form id="register-form" class="auth-form hidden">
+        <div class="auth-input-group">
+          <label for="reg-name">Full Name</label>
+          <input type="text" id="reg-name" placeholder="e.g. Prashant Gupta" required autocomplete="name">
+        </div>
+        <div class="auth-input-group">
+          <label for="reg-email">Email Address</label>
+          <input type="email" id="reg-email" placeholder="e.g. prashant@truthlens.ai" required autocomplete="email">
+        </div>
+        <div class="auth-input-group">
+          <label for="reg-password">Create Password</label>
+          <input type="password" id="reg-password" placeholder="At least 6 characters" minlength="6" required autocomplete="new-password">
+        </div>
+        <div id="reg-error" class="auth-error-msg hidden"></div>
+        <button type="submit" id="register-submit-btn" class="auth-submit-btn">
+          <span>Create Account</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/app.js?v=11"></script>
+</body>
+</html>

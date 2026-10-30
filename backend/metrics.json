@@ -1,0 +1,144 @@
+{
+  "accuracy": 1.0,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "total_samples": 36,
+  "train_samples": 28,
+  "test_samples": 8,
+  "confusion_matrix": {
+    "true_negatives": 4,
+    "false_positives": 0,
+    "false_negatives": 0,
+    "true_positives": 4
+  },
+  "top_fake_indicators": [
+    {
+      "word": "secret",
+      "weight": 0.1345
+    },
+    {
+      "word": "military",
+      "weight": 0.1228
+    },
+    {
+      "word": "miracle",
+      "weight": 0.1177
+    },
+    {
+      "word": "raw",
+      "weight": 0.103
+    },
+    {
+      "word": "private",
+      "weight": 0.0997
+    },
+    {
+      "word": "truth",
+      "weight": 0.0993
+    },
+    {
+      "word": "immediately",
+      "weight": 0.0976
+    },
+    {
+      "word": "landing",
+      "weight": 0.0967
+    },
+    {
+      "word": "don",
+      "weight": 0.0965
+    },
+    {
+      "word": "leaked",
+      "weight": 0.0962
+    },
+    {
+      "word": "cures",
+      "weight": 0.0949
+    },
+    {
+      "word": "diabetes",
+      "weight": 0.0949
+    },
+    {
+      "word": "pharmaceutical",
+      "weight": 0.0939
+    },
+    {
+      "word": "ancient",
+      "weight": 0.093
+    },
+    {
+      "word": "doctors",
+      "weight": 0.0925
+    }
+  ],
+  "top_real_indicators": [
+    {
+      "word": "national",
+      "weight": 0.1199
+    },
+    {
+      "word": "international",
+      "weight": 0.1183
+    },
+    {
+      "word": "transit",
+      "weight": 0.0994
+    },
+    {
+      "word": "consortium",
+      "weight": 0.0984
+    },
+    {
+      "word": "framework",
+      "weight": 0.0981
+    },
+    {
+      "word": "standards",
+      "weight": 0.0924
+    },
+    {
+      "word": "confirmed",
+      "weight": 0.0917
+    },
+    {
+      "word": "university",
+      "weight": 0.0915
+    },
+    {
+      "word": "organization",
+      "weight": 0.09
+    },
+    {
+      "word": "updated",
+      "weight": 0.09
+    },
+    {
+      "word": "infrastructure",
+      "weight": 0.0889
+    },
+    {
+      "word": "regional",
+      "weight": 0.0886
+    },
+    {
+      "word": "energy",
+      "weight": 0.0879
+    },
+    {
+      "word": "percent",
+      "weight": 0.0869
+    },
+    {
+      "word": "grid",
+      "weight": 0.0863
+    }
+  ],
+  "model_architecture": {
+    "vectorizer": "TF-IDF (Unigrams + Bigrams, Sublinear TF, 5000 features)",
+    "classifier": "Passive-Aggressive Classifier with Calibrated Probability Estimation (CalibratedClassifierCV)",
+    "dataset_origin": "Curated Multi-Domain News Benchmark (Science, Health, Geopolitics, Clickbait)"
+  }
+}
